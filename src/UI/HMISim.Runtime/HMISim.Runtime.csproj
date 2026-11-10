@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <!-- 允许在非 Windows 环境尝试构建（CI/交叉验证用），Windows 本机无影响 -->
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\HMISim.Core\HMISim.Core.csproj" />
+    <ProjectReference Include="..\..\Core\HMISim.DriverSdk\HMISim.DriverSdk.csproj" />
+    <ProjectReference Include="..\..\Support\HMISim.Common\HMISim.Common.csproj" />
+    <ProjectReference Include="..\..\Drivers\HMISim.Drivers.Fins\HMISim.Drivers.Fins.csproj" />
+    <ProjectReference Include="..\HMISim.Controls\HMISim.Controls.csproj" />
+    <!-- 阶段 0 演示壳引用模拟器以便无 PLC 时自带数据源；正式运行端不含此引用 -->
+    <ProjectReference Include="..\..\..\simulators\HMISim.Simulators.Fins\HMISim.Simulators.Fins.csproj" />
+  </ItemGroup>
+
+</Project>

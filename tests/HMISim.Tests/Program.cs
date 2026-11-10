@@ -177,6 +177,20 @@ Console.WriteLine("[5] DeviceRuntime 调度（假会话）");
     Eq(Quality.Good, dbD.Get("P1").Quality, "D 恢复后回 Good");
 }
 
+Console.WriteLine("[6] 质量呈现与值格式化（UI 纯逻辑）");
+{
+    Eq("正常", QualityPresentation.Label(Quality.Good), "Good 文案");
+    Eq("通讯异常", QualityPresentation.Label(Quality.Bad), "Bad 文案");
+    Eq("无数据", QualityPresentation.Label(Quality.NoData), "NoData 文案");
+    Check(QualityPresentation.ColorHex(Quality.Good) != QualityPresentation.ColorHex(Quality.Bad), "Good/Bad 颜色不同");
+    Eq("--", ValueFormatter.Format(ValueSnapshot.Empty), "NoData 占位符");
+    Eq("开", ValueFormatter.FormatValue(true), "布尔开");
+    Eq("关", ValueFormatter.FormatValue(false), "布尔关");
+    Eq("36.50", ValueFormatter.FormatValue(36.5f), "浮点两位小数");
+    Eq("42", ValueFormatter.FormatValue((ushort)42), "整数直出");
+    Eq("--", ValueFormatter.Format(new ValueSnapshot(null, DateTimeOffset.Now, Quality.Good)), "空值占位符");
+}
+
 Console.WriteLine($"== 测试结束：{total - failures}/{total} 通过 ==");
 return failures == 0 ? 0 : 1;
 
