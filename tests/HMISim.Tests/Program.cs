@@ -191,6 +191,45 @@ Console.WriteLine("[6] 质量呈现与值格式化（UI 纯逻辑）");
     Eq("--", ValueFormatter.Format(new ValueSnapshot(null, DateTimeOffset.Now, Quality.Good)), "空值占位符");
 }
 
+Console.WriteLine("[7] ProjectModel 工程文件");
+{
+    var sample = HMISim.ProjectModel.SampleProject.Create();
+    var json = HMISim.ProjectModel.ProjectFile.Serialize(sample);
+    var back = HMISim.ProjectModel.ProjectFile.Deserialize(json);
+    Eq(sample.Name, back.Name, "工程名往返");
+    Eq(sample.Points.Count, back.Points.Count, "点位数往返");
+    Eq(sample.Screen.Controls.Count, back.Screen.Controls.Count, "控件数往返");
+    Eq("温度", back.Screen.Controls[2].BindingPointId, "绑定点位往返");
+    Eq("9600", back.Device.Parameters["Port"], "设备参数往返");
+    Eq(HMISim.ProjectModel.ControlKind.Label, back.Screen.Controls[0].Kind, "控件种类往返");
+
+    var tempPath = Path.Combine(Path.GetTempPath(), $"hmisim-test-{Guid.NewGuid():N}.json");
+    HMISim.ProjectModel.ProjectFile.Save(tempPath, sample);
+    var fromFile = HMISim.ProjectModel.ProjectFile.Load(tempPath);
+    Eq(sample.Screen.Controls.Count, fromFile.Screen.Controls.Count, "文件存取往返");
+    File.Delete(tempPath);
+
+    var rejected = false;
+    try
+    {
+        HMISim.ProjectModel.ProjectFile.Deserialize("{\"schemaVersion\": 99}");
+    }
+    catch (InvalidOperationException)
+    {
+        rejected = true;
+    }
+
+    Check(rejected, "高于支持版本拒绝打开");
+
+    var oldDoc = HMISim.ProjectModel.ProjectFile.Deserialize("{\"schemaVersion\": 1, \"name\": \"老工程\"}");
+    Eq("老工程", oldDoc.Name, "旧文件缺字段取默认");
+    Eq(0, oldDoc.Points.Count, "旧文件空点位表");
+
+    var clone = sample.Screen.Controls[1].Clone();
+    clone.Title = "改名";
+    Check(sample.Screen.Controls[1].Title != "改名", "控件克隆独立");
+}
+
 Console.WriteLine($"== 测试结束：{total - failures}/{total} 通过 ==");
 return failures == 0 ? 0 : 1;
 

@@ -1,9 +1,8 @@
-﻿<Application x:Class="HMISim.Runtime.App"
+<Application x:Class="HMISim.Runtime.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:HMISim.Runtime"
-             StartupUri="MainWindow.xaml">
+             xmlns:local="clr-namespace:HMISim.Runtime">
     <Application.Resources>
-         
+        <!-- 仅外观资源（字体/底色），不放任何行为属性（规范 v0.2 第 9 节） -->
     </Application.Resources>
 </Application>

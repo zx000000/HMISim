@@ -13,9 +13,11 @@
   </Folder>
   <Folder Name="/src/Support/">
     <Project Path="src/Support/HMISim.Common/HMISim.Common.csproj" />
+    <Project Path="src/Support/HMISim.ProjectModel/HMISim.ProjectModel.csproj" />
   </Folder>
   <Folder Name="/src/UI/">
     <Project Path="src/UI/HMISim.Controls/HMISim.Controls.csproj" />
+    <Project Path="src/UI/HMISim.Designer/HMISim.Designer.csproj" />
     <Project Path="src/UI/HMISim.Runtime/HMISim.Runtime.csproj" />
   </Folder>
   <Folder Name="/tests/">

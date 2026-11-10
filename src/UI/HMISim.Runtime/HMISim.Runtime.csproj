@@ -18,6 +18,7 @@
     <ProjectReference Include="..\HMISim.Controls\HMISim.Controls.csproj" />
     <!-- 阶段 0 演示壳引用模拟器以便无 PLC 时自带数据源；正式运行端不含此引用 -->
     <ProjectReference Include="..\..\..\simulators\HMISim.Simulators.Fins\HMISim.Simulators.Fins.csproj" />
+    <ProjectReference Include="..\..\Support\HMISim.ProjectModel\HMISim.ProjectModel.csproj" />
   </ItemGroup>
 
 </Project>

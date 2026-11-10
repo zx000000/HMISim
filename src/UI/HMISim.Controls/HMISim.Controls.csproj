@@ -11,6 +11,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Support\HMISim.Common\HMISim.Common.csproj" />
+    <ProjectReference Include="..\..\Support\HMISim.ProjectModel\HMISim.ProjectModel.csproj" />
+    <ProjectReference Include="..\..\Core\HMISim.Core\HMISim.Core.csproj" />
+    <ProjectReference Include="..\..\Core\HMISim.DriverSdk\HMISim.DriverSdk.csproj" />
+    <ProjectReference Include="..\..\Drivers\HMISim.Drivers.Fins\HMISim.Drivers.Fins.csproj" />
+    <ProjectReference Include="..\..\..\simulators\HMISim.Simulators.Fins\HMISim.Simulators.Fins.csproj" />
   </ItemGroup>
 
 </Project>

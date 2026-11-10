@@ -1,0 +1,14 @@
+<UserControl x:Class="HMISim.Designer.Views.EditorCanvas"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d">
+    <!-- 组态画布：绝对定位编辑面。控件以 Border 包裹预览呈现，支持点选/拖动/右下角手柄缩放。
+         本控件只管"编辑手势与呈现"，文档状态归 DesignerViewModel。 -->
+    <Border BorderBrush="#FFD0D4D8" BorderThickness="1" Background="#FFF9FAFB">
+        <Canvas x:Name="Surface" Width="960" Height="600" Background="#FFFCFDFE"
+                MouseMove="Surface_OnMouseMove" MouseLeftButtonUp="Surface_OnMouseLeftButtonUp"
+                MouseLeftButtonDown="Surface_OnMouseLeftButtonDown" />
+    </Border>
+</UserControl>
