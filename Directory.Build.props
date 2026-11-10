@@ -1,0 +1,23 @@
+<!-- HMISim Directory.Build.props —— 依据《HMISim 工程编码与文档规范》v0.2 第 2 节
+     目标框架不写死在此：各项目自声明（类库/控制台 net10.0；将来 WPF 项目 net10.0-windows）。
+     阶段 0 说明：分析器包（Microsoft.VisualStudio.Threading.Analyzers）的统一注入先以注释保留，
+     待仓库可正常还原 NuGet 后启用（规范 v0.2 第 2 节要求）。 -->
+<Project>
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <Version>0.1.0</Version>
+    <Company>HMISim</Company>
+    <Product>HMISim</Product>
+  </PropertyGroup>
+  <!-- 启用方式：取消注释（版本在 Directory.Packages.props 集中管理）
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" PrivateAssets="all" />
+  </ItemGroup>
+  -->
+</Project>

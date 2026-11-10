@@ -1,0 +1,23 @@
+<Solution>
+  <Folder Name="/simulators/">
+    <Project Path="simulators/HMISim.FinsSimulatorApp/HMISim.FinsSimulatorApp.csproj" />
+    <Project Path="simulators/HMISim.Simulators.Fins/HMISim.Simulators.Fins.csproj" />
+  </Folder>
+  <Folder Name="/src/" />
+  <Folder Name="/src/Core/">
+    <Project Path="src/Core/HMISim.Core/HMISim.Core.csproj" />
+    <Project Path="src/Core/HMISim.DriverSdk/HMISim.DriverSdk.csproj" />
+  </Folder>
+  <Folder Name="/src/Drivers/">
+    <Project Path="src/Drivers/HMISim.Drivers.Fins/HMISim.Drivers.Fins.csproj" />
+  </Folder>
+  <Folder Name="/src/Support/">
+    <Project Path="src/Support/HMISim.Common/HMISim.Common.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/HMISim.Tests/HMISim.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/HMISim.DemoHost/HMISim.DemoHost.csproj" />
+  </Folder>
+</Solution>

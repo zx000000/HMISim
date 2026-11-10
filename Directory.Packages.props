@@ -1,0 +1,13 @@
+<!-- HMISim Directory.Packages.props —— 中央包版本管理（CPM），规范 v0.2 第 2 节
+     铁律：任何 .csproj 不许自带版本号。阶段 0 暂无外部包依赖，后续按需在此登记。 -->
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- 立项启用时登记，例如：
+    <PackageVersion Include="OPCFoundation.NetStandard.Opc.Ua" Version="1.5.378.182" />
+    <PackageVersion Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.11.20" />
+    -->
+  </ItemGroup>
+</Project>

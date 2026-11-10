@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Core\HMISim.Core\HMISim.Core.csproj" />
+    <ProjectReference Include="..\..\src\Core\HMISim.DriverSdk\HMISim.DriverSdk.csproj" />
+    <ProjectReference Include="..\..\src\Support\HMISim.Common\HMISim.Common.csproj" />
+    <ProjectReference Include="..\..\src\Drivers\HMISim.Drivers.Fins\HMISim.Drivers.Fins.csproj" />
+    <ProjectReference Include="..\..\simulators\HMISim.Simulators.Fins\HMISim.Simulators.Fins.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>
