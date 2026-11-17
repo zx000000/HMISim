@@ -1,6 +1,7 @@
 using System.Windows;
 using HMISim.Controls;
 using HMISim.Designer.ViewModels;
+using HMISim.Designer.Views;
 using HMISim.ProjectModel;
 using Microsoft.Win32;
 
@@ -102,6 +103,15 @@ public partial class MainWindow : Window
     }
 
     private void DeleteButton_OnClick(object sender, RoutedEventArgs e) => _viewModel.DeleteSelected();
+
+    private void EditPointsButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        var editor = new PointsEditorWindow(_viewModel.Document) { Owner = this };
+        if (editor.ShowDialog() != true)
+            return;
+        _viewModel.ApplyDeviceAndPoints(editor.EditedDevice, editor.EditedPoints, editor.EditedUseEmbeddedSimulator, editor.Rows);
+        Editor.Rebuild();
+    }
 
     private void ApplyButton_OnClick(object sender, RoutedEventArgs e) => _viewModel.ApplyEdits();
 }

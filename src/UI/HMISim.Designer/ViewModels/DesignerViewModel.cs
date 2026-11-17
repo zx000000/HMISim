@@ -166,6 +166,52 @@ public sealed class DesignerViewModel : ObservableObject
         ItemEdited?.Invoke(item);
     }
 
+    /// <summary>
+    /// 应用点位/设备编辑结果（编辑窗口已校验通过）：替换设备与点位表，并处理画面绑定——
+    /// 点位改名时绑定跟随新名，点位删除时指向它的绑定被清除（控件运行时显示无数据）。
+    /// </summary>
+    /// <param name="device">新设备定义。</param>
+    /// <param name="points">新点位表。</param>
+    /// <param name="useEmbeddedSimulator">模拟器开关。</param>
+    /// <param name="rows">编辑行（OriginalId 用于识别改名与删除）。</param>
+    public void ApplyDeviceAndPoints(DeviceDefinition device, List<PointDto> points, bool useEmbeddedSimulator, IReadOnlyList<PointEditRow> rows)
+    {
+        var renames = new Dictionary<string, string>(StringComparer.Ordinal);
+        foreach (var row in rows)
+        {
+            if (row.OriginalId is { } original && original != row.Id.Trim())
+                renames[original] = row.Id.Trim();
+        }
+
+        var survivingIds = new HashSet<string>(points.Select(p => p.Id), StringComparer.Ordinal);
+        var renamed = 0;
+        var cleared = 0;
+        foreach (var control in Document.Screen.Controls)
+        {
+            if (control.BindingPointId is not { } bound)
+                continue;
+            if (renames.TryGetValue(bound, out var newId))
+            {
+                control.BindingPointId = newId;
+                renamed++;
+            }
+            else if (!survivingIds.Contains(bound))
+            {
+                control.BindingPointId = null;
+                cleared++;
+            }
+        }
+
+        Document.Device = device;
+        Document.Points = points;
+        Document.UseEmbeddedSimulator = useEmbeddedSimulator;
+        ReloadPointIds();
+        StatusText = $"已更新点位表：共 {points.Count} 个点位"
+            + (renamed > 0 ? $"，{renamed} 处绑定已跟随改名" : string.Empty)
+            + (cleared > 0 ? $"，{cleared} 处失效绑定已清除" : string.Empty);
+        DocumentReplaced?.Invoke();
+    }
+
     private void ReloadPointIds()
     {
         PointIds = Document.Points.Select(p => p.Id).ToList();

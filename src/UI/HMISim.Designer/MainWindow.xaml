@@ -26,8 +26,9 @@
             <Button Content="＋ 文本标签" Click="AddLabelButton_OnClick" Padding="6,6" Margin="0,6,0,0" HorizontalContentAlignment="Left" />
             <Button Content="删除选中" Click="DeleteButton_OnClick" Padding="6,6" Margin="0,16,0,0" HorizontalContentAlignment="Left" />
             <TextBlock Text="点位表" FontWeight="Bold" Margin="0,20,0,6" />
-            <ListBox ItemsSource="{Binding PointIds}" Height="220" />
-            <TextBlock Text="点位/设备的编辑在后续阶段提供；当前用样例点位表。" FontSize="11"
+            <Button Content="编辑点位 / 设备…" Click="EditPointsButton_OnClick" Padding="6,6" HorizontalContentAlignment="Left" />
+            <ListBox ItemsSource="{Binding PointIds}" Height="220" Margin="0,6,0,0" />
+            <TextBlock Text="在编辑窗口里增删改点位、改设备通讯参数；改名后画面绑定自动跟随。" FontSize="11"
                        Foreground="#FF6B7280" TextWrapping="Wrap" Margin="0,6,0,0" />
         </StackPanel>
 

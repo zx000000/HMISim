@@ -81,6 +81,14 @@ public sealed class DeviceDefinition
 
     /// <summary>驱动参数（字符串字典；数值参数以字符串存、运行时按参数声明解析，避免 JSON 数字/文本往返歧义）。</summary>
     public Dictionary<string, string> Parameters { get; set; } = [];
+
+    /// <summary>深拷贝（组态端编辑副本用，改副本不影响原文档、取消编辑零成本）。</summary>
+    public DeviceDefinition Clone() => new()
+    {
+        DeviceId = DeviceId,
+        DriverId = DriverId,
+        Parameters = new Dictionary<string, string>(Parameters),
+    };
 }
 
 /// <summary>点位定义（工程侧 DTO；运行时由播放器映射为内核的 PointDefinition）。</summary>
@@ -103,6 +111,17 @@ public sealed class PointDto
 
     /// <summary>字符串类型字数；其余类型忽略。</summary>
     public int LengthWords { get; set; } = 1;
+
+    /// <summary>深拷贝（组态端编辑副本用）。</summary>
+    public PointDto Clone() => new()
+    {
+        Id = Id,
+        DeviceId = DeviceId,
+        Address = Address,
+        DataType = DataType,
+        ScanPeriodMs = ScanPeriodMs,
+        LengthWords = LengthWords,
+    };
 }
 
 /// <summary>

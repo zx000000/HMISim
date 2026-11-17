@@ -2,7 +2,7 @@
 
 - **所属分层**：Support（ProjectModel）/ UI（Designer 组态端）
 - **对应程序集**：HMISim.ProjectModel、HMISim.Designer
-- **文档版本**：v0.1　**最后更新**：2026-11-10
+- **文档版本**：v0.2　**最后更新**：2026-11-17
 
 ## 1. 模块概述
 
@@ -17,6 +17,7 @@ ProjectModel：工程文档的纯数据模型与 JSON 存取——一份工程 =
 | `ProjectDocument` | 类 | 工程根对象：SchemaVersion / Name / MinRuntimeVersion / UseEmbeddedSimulator / Device / Points / Screen |
 | `ProjectFile.Save/Load` | 静态类 | JSON（camelCase、枚举字符串）；版本高于支持值拒绝打开并报错 |
 | `SampleProject.Create()` | 静态类 | 样例工程（组态端新建模板，与演示点位一致） |
+| `ProjectValidator.Validate()` | 静态类 | 协议无关结构校验：点位名唯一/非空、地址非空、类型名合法、周期与字数在界内、归属设备一致；地址格式归驱动 ParseAddress |
 | ScreenPlayer 播放 | Controls 控件 | 组态预览与运行端共用同一播放器，编辑所见即运行所得 |
 | 工程→运行时映射 | Controls.ProjectMapper | ProjectModel 与 Core 之间唯一的翻译点 |
 
@@ -28,6 +29,8 @@ ProjectModel：工程文档的纯数据模型与 JSON 存取——一份工程 =
 | ProjectFile | ProjectModel/ProjectFile.cs | 工程 JSON 读写与版本校验 | 只向前兼容 |
 | DesignerViewModel | Designer/ViewModels/DesignerViewModel.cs | 文档状态 + 属性编辑缓冲 | 缓冲经「应用」写回模型 |
 | EditorCanvas | Designer/Views/EditorCanvas.xaml(.cs) | 可编辑画布（选中/拖动/缩放手势） | 几何直接写回 ControlItem |
+| PointsEditorWindow | Designer/Views/PointsEditorWindow.xaml(.cs) | 点位/设备编辑窗口（模态） | 副本上编辑、确定时三层校验（参数声明/结构/驱动地址） |
+| PointEditRow | Designer/ViewModels/PointEditRow.cs | 点位编辑行缓冲 | 数值以字符串承载、确定时统一解析 |
 
 ## 4. 关键类详述
 
@@ -45,11 +48,17 @@ ProjectModel：工程文档的纯数据模型与 JSON 存取——一份工程 =
 
 ### 4.2 DesignerViewModel
 
-**方法清单（关键）**：NewDocument / LoadFrom / SaveTo（文档生命周期）；AddControl / DeleteSelected（工具箱）；SelectItem / ApplyEdits（属性缓冲装载与写回）。
+**方法清单（关键）**：NewDocument / LoadFrom / SaveTo（文档生命周期）；AddControl / DeleteSelected（工具箱）；SelectItem / ApplyEdits（属性缓冲装载与写回）；ApplyDeviceAndPoints（应用点位/设备编辑：点位改名时画面绑定跟随、删点位时失效绑定清除，结果计入状态栏）。
+
+### 4.3 PointsEditorWindow
+
+**作用**：组态端左侧「编辑点位 / 设备…」打开的模态窗口：上半设备区（设备 Id、驱动下拉、模拟器开关、按驱动参数声明自动生成的参数行），下半点位表（名称/地址/数据类型下拉/周期/字数，增删行）。
+
+**校验分工**：确定时依次执行——① 参数按驱动声明查必填与整数性；② ProjectValidator 结构校验；③ 驱动会话 ParseAddress 查地址格式。任一不过不关窗、问题清单显示于窗口底部。编辑全程在副本上进行，取消零成本。
 
 ## 5. 约定与注意事项
 
-- 阶段 1 已知取舍（后续阶段处理）：无撤销/重做；属性编辑为「缓冲+应用」模式而非实时双向；单设备单画面；点位/设备编辑界面未做（先用样例点位表）；预览在组态进程内开窗播放，与独立运行端共用 ScreenPlayer。
+- 阶段 1 已知取舍（后续阶段处理）：无撤销/重做；属性编辑为「缓冲+应用」模式而非实时双向；单设备单画面；点位/设备编辑已提供（PointsEditorWindow），但驱动下拉仅 fins、设备仍单台；预览在组态进程内开窗播放，与独立运行端共用 ScreenPlayer。
 - 画布尺寸 = 画面逻辑尺寸（样例 960×600），暂不做缩放适配（Viewbox 留待画面系统完善时加）。
 
 ## 6. 参考来源
@@ -61,3 +70,4 @@ ProjectModel：工程文档的纯数据模型与 JSON 存取——一份工程 =
 | 日期 | 版本 | 变更内容 |
 |---|---|---|
 | 2026-11-10 | v0.1 | 阶段 1 初版：工程模型 + 组态端最小可编辑闭环 |
+| 2026-11-17 | v0.2 | 点位/设备编辑：ProjectValidator + DTO 深拷贝 + PointsEditorWindow（参数声明驱动表单、三层校验、绑定跟随改名/清理） |

@@ -230,6 +230,43 @@ Console.WriteLine("[7] ProjectModel 工程文件");
     Check(sample.Screen.Controls[1].Title != "改名", "控件克隆独立");
 }
 
+Console.WriteLine("[8] ProjectValidator 工程校验");
+{
+    var clean = HMISim.ProjectModel.SampleProject.Create();
+    Eq(0, HMISim.ProjectModel.ProjectValidator.Validate(clean).Count, "样例工程校验干净");
+
+    var dup = HMISim.ProjectModel.SampleProject.Create();
+    dup.Points.Add(new HMISim.ProjectModel.PointDto { Id = "计数器", DeviceId = "PLC1", Address = "D10", DataType = "UInt16", ScanPeriodMs = 500 });
+    Check(HMISim.ProjectModel.ProjectValidator.Validate(dup).Any(m => m.Contains("重复")), "点位名重复被检出");
+
+    var noAddr = HMISim.ProjectModel.SampleProject.Create();
+    noAddr.Points[0].Address = "  ";
+    Check(HMISim.ProjectModel.ProjectValidator.Validate(noAddr).Any(m => m.Contains("地址不能为空")), "空地址被检出");
+
+    var badType = HMISim.ProjectModel.SampleProject.Create();
+    badType.Points[0].DataType = "Int64";
+    Check(HMISim.ProjectModel.ProjectValidator.Validate(badType).Any(m => m.Contains("数据类型")), "未知数据类型被检出");
+
+    var fastScan = HMISim.ProjectModel.SampleProject.Create();
+    fastScan.Points[0].ScanPeriodMs = 10;
+    Check(HMISim.ProjectModel.ProjectValidator.Validate(fastScan).Any(m => m.Contains("采集周期")), "周期过小被检出");
+
+    var badWords = HMISim.ProjectModel.SampleProject.Create();
+    badWords.Points.Add(new HMISim.ProjectModel.PointDto { Id = "条码", DeviceId = "PLC1", Address = "D300", DataType = "String", ScanPeriodMs = 500, LengthWords = 0 });
+    Check(HMISim.ProjectModel.ProjectValidator.Validate(badWords).Any(m => m.Contains("字数")), "字符串字数为 0 被检出");
+
+    var wrongDevice = HMISim.ProjectModel.SampleProject.Create();
+    wrongDevice.Points[0].DeviceId = "PLC9";
+    Check(HMISim.ProjectModel.ProjectValidator.Validate(wrongDevice).Any(m => m.Contains("不一致")), "点位归属设备不一致被检出");
+
+    var pointClone = clean.Points[0].Clone();
+    pointClone.Address = "D999";
+    Eq("D0", clean.Points[0].Address, "点位克隆独立");
+    var deviceClone = clean.Device.Clone();
+    deviceClone.Parameters["Port"] = "1";
+    Eq("9600", clean.Device.Parameters["Port"], "设备克隆参数独立");
+}
+
 Console.WriteLine($"== 测试结束：{total - failures}/{total} 通过 ==");
 return failures == 0 ? 0 : 1;
 
