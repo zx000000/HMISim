@@ -1,6 +1,6 @@
 namespace HMISim.ProjectModel;
 
-/// <summary>画面控件种类（阶段 1 最小集，后续按控件清单扩充）。</summary>
+/// <summary>画面控件种类（阶段 1 常用集，后续按控件清单继续扩充）。</summary>
 public enum ControlKind
 {
     /// <summary>数值显示：标题 + 绑定点位的当前值 + 质量呈现（HMISim.Controls.ValueDisplay）。</summary>
@@ -8,6 +8,37 @@ public enum ControlKind
 
     /// <summary>文本标签：静态文本（标题字段即文本内容）。</summary>
     Label,
+
+    /// <summary>按钮：点击/按压向绑定点位写入（动作模式见 <see cref="ButtonActionMode"/>）。</summary>
+    PushButton,
+
+    /// <summary>指示灯：绑定点位为真时亮灯（数值点位非 0 视为真）。</summary>
+    IndicatorLamp,
+
+    /// <summary>数值输入：显示当前值，输入新值确认后写入绑定点位。</summary>
+    ValueInput,
+
+    /// <summary>进度条：按量程（MinValue~MaxValue）把数值渲染为水平填充条。</summary>
+    LevelBar,
+}
+
+/// <summary>按钮控件的动作模式。</summary>
+public enum ButtonActionMode
+{
+    /// <summary>点动：按下写「开」值（Bool=true / 数值=WriteValue / 字符串=WriteValue），松开写「关」值（false / 0 / 空）。</summary>
+    Momentary,
+
+    /// <summary>置位：点击写「开」值。</summary>
+    Set,
+
+    /// <summary>复位：点击写「关」值。</summary>
+    Reset,
+
+    /// <summary>切换：点击按当前值取反写回（仅 Bool 点位）。</summary>
+    Toggle,
+
+    /// <summary>写数值：点击写 WriteValue（按点位类型转换）。</summary>
+    WriteValue,
 }
 
 /// <summary>
@@ -40,6 +71,18 @@ public sealed class ControlItem
     /// <summary>高度。</summary>
     public double Height { get; set; } = 64;
 
+    /// <summary>按钮动作模式（仅 PushButton 用）。</summary>
+    public ButtonActionMode ActionMode { get; set; } = ButtonActionMode.Momentary;
+
+    /// <summary>按钮「开」值 / 写数值模式的写入文本（运行时按绑定点位类型转换）。</summary>
+    public string WriteValue { get; set; } = "1";
+
+    /// <summary>量程下限（LevelBar 填充比例与 ValueInput 范围校验用）。</summary>
+    public double MinValue { get; set; }
+
+    /// <summary>量程上限（同上；MaxValue 大于 MinValue 时量程生效）。</summary>
+    public double MaxValue { get; set; } = 100;
+
     /// <summary>深拷贝（组态端复制/新建样例时用）。</summary>
     public ControlItem Clone() => new()
     {
@@ -51,6 +94,10 @@ public sealed class ControlItem
         Y = Y,
         Width = Width,
         Height = Height,
+        ActionMode = ActionMode,
+        WriteValue = WriteValue,
+        MinValue = MinValue,
+        MaxValue = MaxValue,
     };
 }
 

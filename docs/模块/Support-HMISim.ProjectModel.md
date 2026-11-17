@@ -2,7 +2,7 @@
 
 - **所属分层**：Support（ProjectModel）/ UI（Designer 组态端）
 - **对应程序集**：HMISim.ProjectModel、HMISim.Designer
-- **文档版本**：v0.2　**最后更新**：2026-11-17
+- **文档版本**：v0.3　**最后更新**：2026-11-17
 
 ## 1. 模块概述
 
@@ -71,3 +71,4 @@ ProjectModel：工程文档的纯数据模型与 JSON 存取——一份工程 =
 |---|---|---|
 | 2026-11-10 | v0.1 | 阶段 1 初版：工程模型 + 组态端最小可编辑闭环 |
 | 2026-11-17 | v0.2 | 点位/设备编辑：ProjectValidator + DTO 深拷贝 + PointsEditorWindow（参数声明驱动表单、三层校验、绑定跟随改名/清理） |
+| 2026-11-17 | v0.3 | 控件模型扩充：ControlKind 增加按钮/指示灯/数值输入/进度条，ControlItem 增加 ActionMode/WriteValue/MinValue/MaxValue（旧工程缺字段取默认、向前兼容）；校验器增加量程与按钮写入值检查；样例工程加入四个新控件演示 |

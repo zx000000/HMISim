@@ -65,8 +65,29 @@ public sealed class DesignerViewModel : ObservableObject
     /// <summary>缓冲：高。</summary>
     public string EditHeight { get; set; } = "64";
 
+    /// <summary>缓冲：按钮动作模式名（枚举名）。</summary>
+    public string EditActionMode { get; set; } = nameof(ButtonActionMode.Momentary);
+
+    /// <summary>缓冲：按钮写入值。</summary>
+    public string EditWriteValue { get; set; } = "1";
+
+    /// <summary>缓冲：量程下限。</summary>
+    public string EditMinValue { get; set; } = "0";
+
+    /// <summary>缓冲：量程上限。</summary>
+    public string EditMaxValue { get; set; } = "100";
+
+    /// <summary>动作模式选项（枚举名列表，属性面板下拉用）。</summary>
+    public IReadOnlyList<string> ActionModes { get; } = Enum.GetNames<ButtonActionMode>();
+
     /// <summary>是否有选中项（属性面板可用性）。</summary>
     public bool HasSelection => SelectedItem is not null;
+
+    /// <summary>选中项是否为按钮（属性面板显示动作字段）。</summary>
+    public bool ShowButtonFields => SelectedItem?.Kind == ControlKind.PushButton;
+
+    /// <summary>选中项是否用量程（进度条/数值输入，属性面板显示量程字段）。</summary>
+    public bool ShowRangeFields => SelectedItem?.Kind is ControlKind.LevelBar or ControlKind.ValueInput;
 
     /// <summary>新建工程（以样例工程为模板）。</summary>
     public void NewDocument()
@@ -98,19 +119,28 @@ public sealed class DesignerViewModel : ObservableObject
         StatusText = $"已保存 {path}";
     }
 
-    /// <summary>工具箱新增控件：按种类生成、级联偏移放置，返回新控件。</summary>
+    /// <summary>工具箱新增控件：按种类给缺省标题/尺寸、级联偏移放置，返回新控件。</summary>
     public ControlItem AddControl(ControlKind kind)
     {
         var offset = Document.Screen.Controls.Count % 5 * 24;
+        var (title, width, height) = kind switch
+        {
+            ControlKind.ValueDisplay => ("新数值", 280d, 72d),
+            ControlKind.PushButton => ("新按钮", 180d, 56d),
+            ControlKind.IndicatorLamp => ("新指示灯", 220d, 64d),
+            ControlKind.ValueInput => ("新输入", 300d, 104d),
+            ControlKind.LevelBar => ("新进度条", 300d, 64d),
+            _ => ("新标签", 200d, 40d),
+        };
         var item = new ControlItem
         {
             Kind = kind,
-            Title = kind == ControlKind.ValueDisplay ? "新数值" : "新标签",
-            BindingPointId = kind == ControlKind.ValueDisplay ? PointIds.FirstOrDefault() : null,
+            Title = title,
+            BindingPointId = kind == ControlKind.Label ? null : PointIds.FirstOrDefault(),
             X = 40 + offset,
             Y = 40 + offset,
-            Width = kind == ControlKind.ValueDisplay ? 280 : 200,
-            Height = kind == ControlKind.ValueDisplay ? 72 : 40,
+            Width = width,
+            Height = height,
         };
         Document.Screen.Controls.Add(item);
         StatusText = $"已添加控件 {item.Title}";
@@ -146,6 +176,10 @@ public sealed class DesignerViewModel : ObservableObject
             EditY = Format(item.Y);
             EditWidth = Format(item.Width);
             EditHeight = Format(item.Height);
+            EditActionMode = item.ActionMode.ToString();
+            EditWriteValue = item.WriteValue;
+            EditMinValue = item.MinValue.ToString("0.##", CultureInfo.InvariantCulture);
+            EditMaxValue = item.MaxValue.ToString("0.##", CultureInfo.InvariantCulture);
         }
 
         RaiseBufferChanged();
@@ -162,6 +196,11 @@ public sealed class DesignerViewModel : ObservableObject
         item.Y = ParseOr(EditY, item.Y);
         item.Width = Math.Max(60, ParseOr(EditWidth, item.Width));
         item.Height = Math.Max(36, ParseOr(EditHeight, item.Height));
+        if (Enum.TryParse<ButtonActionMode>(EditActionMode, out var mode))
+            item.ActionMode = mode;
+        item.WriteValue = EditWriteValue;
+        item.MinValue = ParseOr(EditMinValue, item.MinValue);
+        item.MaxValue = ParseOr(EditMaxValue, item.MaxValue);
         StatusText = $"已应用属性到 {item.Title}";
         ItemEdited?.Invoke(item);
     }
@@ -226,7 +265,13 @@ public sealed class DesignerViewModel : ObservableObject
         OnPropertyChanged(nameof(EditY));
         OnPropertyChanged(nameof(EditWidth));
         OnPropertyChanged(nameof(EditHeight));
+        OnPropertyChanged(nameof(EditActionMode));
+        OnPropertyChanged(nameof(EditWriteValue));
+        OnPropertyChanged(nameof(EditMinValue));
+        OnPropertyChanged(nameof(EditMaxValue));
         OnPropertyChanged(nameof(HasSelection));
+        OnPropertyChanged(nameof(ShowButtonFields));
+        OnPropertyChanged(nameof(ShowRangeFields));
         OnPropertyChanged(nameof(SelectedItem));
     }
 

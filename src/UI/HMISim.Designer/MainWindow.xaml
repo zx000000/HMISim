@@ -7,6 +7,9 @@
         mc:Ignorable="d"
         Title="HMISim 组态端（阶段 1）" Height="840" Width="1320"
         Background="#FFF3F4F6">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolVis" />
+    </Window.Resources>
     <DockPanel>
         <!-- 工具栏 -->
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="10,8">
@@ -24,6 +27,10 @@
             <TextBlock Text="工具箱" FontWeight="Bold" Margin="0,0,0,6" />
             <Button Content="＋ 数值显示" Click="AddValueButton_OnClick" Padding="6,6" HorizontalContentAlignment="Left" />
             <Button Content="＋ 文本标签" Click="AddLabelButton_OnClick" Padding="6,6" Margin="0,6,0,0" HorizontalContentAlignment="Left" />
+            <Button Content="＋ 按钮" Click="AddButtonButton_OnClick" Padding="6,6" Margin="0,6,0,0" HorizontalContentAlignment="Left" />
+            <Button Content="＋ 指示灯" Click="AddLampButton_OnClick" Padding="6,6" Margin="0,6,0,0" HorizontalContentAlignment="Left" />
+            <Button Content="＋ 数值输入" Click="AddInputButton_OnClick" Padding="6,6" Margin="0,6,0,0" HorizontalContentAlignment="Left" />
+            <Button Content="＋ 进度条" Click="AddBarButton_OnClick" Padding="6,6" Margin="0,6,0,0" HorizontalContentAlignment="Left" />
             <Button Content="删除选中" Click="DeleteButton_OnClick" Padding="6,6" Margin="0,16,0,0" HorizontalContentAlignment="Left" />
             <TextBlock Text="点位表" FontWeight="Bold" Margin="0,20,0,6" />
             <Button Content="编辑点位 / 设备…" Click="EditPointsButton_OnClick" Padding="6,6" HorizontalContentAlignment="Left" />
@@ -55,7 +62,8 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <TextBlock Text="标题" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,4" />
                 <TextBox Text="{Binding EditTitle, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Grid.Column="1" Margin="0,4" Padding="4,2" />
@@ -70,9 +78,28 @@
                 <TextBox Text="{Binding EditWidth, UpdateSourceTrigger=PropertyChanged}" Grid.Row="4" Grid.Column="1" Margin="0,4" Padding="4,2" />
                 <TextBlock Text="高度" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Margin="0,4" />
                 <TextBox Text="{Binding EditHeight, UpdateSourceTrigger=PropertyChanged}" Grid.Row="5" Grid.Column="1" Margin="0,4" Padding="4,2" />
-                <Button Content="应用属性" Click="ApplyButton_OnClick" Grid.Row="6" Grid.Column="1"
+                <TextBlock Text="动作模式" Grid.Row="6" Grid.Column="0" VerticalAlignment="Center" Margin="0,4"
+                           Visibility="{Binding ShowButtonFields, Converter={StaticResource BoolVis}}" />
+                <ComboBox ItemsSource="{Binding ActionModes}" SelectedItem="{Binding EditActionMode}"
+                          Grid.Row="6" Grid.Column="1" Margin="0,4" Padding="4,2"
+                          Visibility="{Binding ShowButtonFields, Converter={StaticResource BoolVis}}" />
+                <TextBlock Text="写入值" Grid.Row="7" Grid.Column="0" VerticalAlignment="Center" Margin="0,4"
+                           Visibility="{Binding ShowButtonFields, Converter={StaticResource BoolVis}}" />
+                <TextBox Text="{Binding EditWriteValue, UpdateSourceTrigger=PropertyChanged}" Grid.Row="7" Grid.Column="1" Margin="0,4" Padding="4,2"
+                         Visibility="{Binding ShowButtonFields, Converter={StaticResource BoolVis}}" />
+                <TextBlock Text="量程下限" Grid.Row="8" Grid.Column="0" VerticalAlignment="Center" Margin="0,4"
+                           Visibility="{Binding ShowRangeFields, Converter={StaticResource BoolVis}}" />
+                <TextBox Text="{Binding EditMinValue, UpdateSourceTrigger=PropertyChanged}" Grid.Row="8" Grid.Column="1" Margin="0,4" Padding="4,2"
+                         Visibility="{Binding ShowRangeFields, Converter={StaticResource BoolVis}}" />
+                <TextBlock Text="量程上限" Grid.Row="9" Grid.Column="0" VerticalAlignment="Center" Margin="0,4"
+                           Visibility="{Binding ShowRangeFields, Converter={StaticResource BoolVis}}" />
+                <TextBox Text="{Binding EditMaxValue, UpdateSourceTrigger=PropertyChanged}" Grid.Row="9" Grid.Column="1" Margin="0,4" Padding="4,2"
+                         Visibility="{Binding ShowRangeFields, Converter={StaticResource BoolVis}}" />
+                <Button Content="应用属性" Click="ApplyButton_OnClick" Grid.Row="10" Grid.Column="1"
                         Padding="10,4" Margin="0,10,0,0" HorizontalAlignment="Left" />
             </Grid>
+            <TextBlock Text="按钮动作：Momentary 点动 / Set 置位 / Reset 复位 / Toggle 切换（仅 Bool）/ WriteValue 写写入值。量程用于进度条填充与数值输入校验。"
+                       FontSize="11" Foreground="#FF6B7280" TextWrapping="Wrap" Margin="0,8,0,0" />
             <TextBlock Text="画布上可直接拖动移动、拖右下角灰块缩放；改完属性点「应用属性」生效。"
                        FontSize="11" Foreground="#FF6B7280" TextWrapping="Wrap" Margin="0,10,0,0" />
         </StackPanel>

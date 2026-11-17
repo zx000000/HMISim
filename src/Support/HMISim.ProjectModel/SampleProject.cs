@@ -40,6 +40,10 @@ public static class SampleProject
             new ControlItem { Kind = ControlKind.ValueDisplay, Title = "温度", BindingPointId = "温度", X = 328, Y = 72, Width = 280, Height = 72 },
             new ControlItem { Kind = ControlKind.ValueDisplay, Title = "运行信号", BindingPointId = "运行信号", X = 24, Y = 168, Width = 280, Height = 72 },
             new ControlItem { Kind = ControlKind.ValueDisplay, Title = "设定值", BindingPointId = "设定值", X = 328, Y = 168, Width = 280, Height = 72 },
+            new ControlItem { Kind = ControlKind.IndicatorLamp, Title = "运行指示", BindingPointId = "运行信号", X = 24, Y = 264, Width = 220, Height = 64 },
+            new ControlItem { Kind = ControlKind.LevelBar, Title = "温度条", BindingPointId = "温度", MinValue = 0, MaxValue = 50, X = 268, Y = 264, Width = 320, Height = 64 },
+            new ControlItem { Kind = ControlKind.ValueInput, Title = "设定值输入", BindingPointId = "设定值", X = 612, Y = 264, Width = 300, Height = 104 },
+            new ControlItem { Kind = ControlKind.PushButton, Title = "设定值写 100", BindingPointId = "设定值", ActionMode = ButtonActionMode.WriteValue, WriteValue = "100", X = 24, Y = 352, Width = 220, Height = 56 },
         ];
         return document;
     }

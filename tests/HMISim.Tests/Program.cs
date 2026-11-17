@@ -267,6 +267,40 @@ Console.WriteLine("[8] ProjectValidator 工程校验");
     Eq("9600", clean.Device.Parameters["Port"], "设备克隆参数独立");
 }
 
+Console.WriteLine("[9] PointValueParser 输入转换与控件校验");
+{
+    Check(HMISim.Core.PointValueParser.TryParse("开", TagDataType.Bool, out var bOn, out _) && bOn is true, "Bool「开」→ true");
+    Check(HMISim.Core.PointValueParser.TryParse("0", TagDataType.Bool, out var bOff, out _) && bOff is false, "Bool「0」→ false");
+    Check(!HMISim.Core.PointValueParser.TryParse("2", TagDataType.Bool, out _, out _), "Bool「2」拒绝");
+    Check(HMISim.Core.PointValueParser.TryParse("65535", TagDataType.UInt16, out var uOk, out _) && uOk is ushort uMax && uMax == 65535, "UInt16 上限通过");
+    Check(!HMISim.Core.PointValueParser.TryParse("65536", TagDataType.UInt16, out _, out _), "UInt16 超限拒绝");
+    Check(!HMISim.Core.PointValueParser.TryParse("-1", TagDataType.UInt16, out _, out _), "UInt16 负数拒绝");
+    Check(HMISim.Core.PointValueParser.TryParse("-5", TagDataType.Int32, out var iOk, out _) && iOk is -5, "Int32 负数通过");
+    Check(HMISim.Core.PointValueParser.TryParse("36.5", TagDataType.Float32, out var fOk, out _) && fOk is 36.5f, "Float32 小数通过");
+    Check(!HMISim.Core.PointValueParser.TryParse("abc", TagDataType.Float32, out _, out _), "Float32 非数值拒绝");
+    Check(HMISim.Core.PointValueParser.TryParse("SN123", TagDataType.String, out var sOk, out _) && (string)sOk! == "SN123", "String 直通");
+    Check(!HMISim.Core.PointValueParser.TryParse("  ", TagDataType.UInt16, out _, out _), "空白输入拒绝");
+
+    var barBad = HMISim.ProjectModel.SampleProject.Create();
+    barBad.Screen.Controls.Add(new HMISim.ProjectModel.ControlItem
+    {
+        Kind = HMISim.ProjectModel.ControlKind.LevelBar, Title = "坏量程", BindingPointId = "温度", MinValue = 50, MaxValue = 50,
+    });
+    Check(HMISim.ProjectModel.ProjectValidator.Validate(barBad).Any(m => m.Contains("量程")), "进度条量程非法被检出");
+
+    var btnBad = HMISim.ProjectModel.SampleProject.Create();
+    btnBad.Screen.Controls.Add(new HMISim.ProjectModel.ControlItem
+    {
+        Kind = HMISim.ProjectModel.ControlKind.PushButton, Title = "坏按钮", BindingPointId = "设定值",
+        ActionMode = HMISim.ProjectModel.ButtonActionMode.WriteValue, WriteValue = "abc",
+    });
+    Check(HMISim.ProjectModel.ProjectValidator.Validate(btnBad).Any(m => m.Contains("写入值")), "按钮写入值与点位类型不符被检出");
+
+    var controlClone = HMISim.ProjectModel.SampleProject.Create().Screen.Controls[^1].Clone();
+    Eq(HMISim.ProjectModel.ButtonActionMode.WriteValue, controlClone.ActionMode, "控件克隆带动作模式");
+    Eq("100", controlClone.WriteValue, "控件克隆带写入值");
+}
+
 Console.WriteLine($"== 测试结束：{total - failures}/{total} 通过 ==");
 return failures == 0 ? 0 : 1;
 

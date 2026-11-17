@@ -1,9 +1,12 @@
+using System.Globalization;
+
 namespace HMISim.ProjectModel;
 
 /// <summary>
 /// 工程文档的协议无关校验（组态端保存/确认编辑前调用；运行端打开工程时亦可复用）。
 /// 只查结构性问题：点位 Id 唯一与非空、地址非空、数据类型名合法、周期/字数在界内、
-/// 点位归属设备与文档设备一致。地址格式是否合法属驱动职责，由组态端另行调用驱动
+/// 点位归属设备与文档设备一致、控件量程合法、按钮写入值与绑定点位类型相符。
+/// 地址格式是否合法属驱动职责，由组态端另行调用驱动
 /// ParseAddress 校验，不在本类范围内。
 /// </summary>
 public static class ProjectValidator
@@ -49,6 +52,33 @@ public static class ProjectValidator
                 issues.Add($"{label}：采集周期 {point.ScanPeriodMs}ms 超出范围（{MinScanPeriodMs}~{MaxScanPeriodMs}）");
             if (point.DataType == "String" && (point.LengthWords < 1 || point.LengthWords > MaxLengthWords))
                 issues.Add($"{label}：字符串字数 {point.LengthWords} 超出范围（1~{MaxLengthWords}）");
+        }
+
+        // ---- 控件侧：量程与按钮写入值（与绑定点位类型对照） ----
+        var pointsById = new Dictionary<string, PointDto>(StringComparer.Ordinal);
+        foreach (var point in document.Points)
+        {
+            if (!string.IsNullOrWhiteSpace(point.Id))
+                pointsById.TryAdd(point.Id, point);
+        }
+
+        foreach (var control in document.Screen.Controls)
+        {
+            var label = $"控件「{control.Title}」";
+            if (control.Kind == ControlKind.LevelBar && control.MaxValue <= control.MinValue)
+                issues.Add($"{label}：进度条量程上限（{control.MaxValue}）必须大于下限（{control.MinValue}）");
+            if (control.Kind == ControlKind.PushButton
+                && control.ActionMode == ButtonActionMode.WriteValue
+                && control.BindingPointId is { } boundId
+                && pointsById.TryGetValue(boundId, out var bound))
+            {
+                if (bound.DataType is "UInt16" or "Int32" or "Float32"
+                    && !double.TryParse(control.WriteValue, NumberStyles.Float, CultureInfo.InvariantCulture, out _))
+                    issues.Add($"{label}：写入值「{control.WriteValue}」不是数值，与点位「{bound.Id}」的类型 {bound.DataType} 不符");
+                else if (bound.DataType == "Bool"
+                    && control.WriteValue.Trim().ToLowerInvariant() is not ("0" or "1" or "true" or "false" or "开" or "关"))
+                    issues.Add($"{label}：写入值「{control.WriteValue}」不是合法的开关量（0/1/true/false/开/关）");
+            }
         }
 
         return issues;

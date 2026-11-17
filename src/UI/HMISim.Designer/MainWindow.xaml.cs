@@ -95,6 +95,14 @@ public partial class MainWindow : Window
 
     private void AddLabelButton_OnClick(object sender, RoutedEventArgs e) => AddControl(ControlKind.Label);
 
+    private void AddButtonButton_OnClick(object sender, RoutedEventArgs e) => AddControl(ControlKind.PushButton);
+
+    private void AddLampButton_OnClick(object sender, RoutedEventArgs e) => AddControl(ControlKind.IndicatorLamp);
+
+    private void AddInputButton_OnClick(object sender, RoutedEventArgs e) => AddControl(ControlKind.ValueInput);
+
+    private void AddBarButton_OnClick(object sender, RoutedEventArgs e) => AddControl(ControlKind.LevelBar);
+
     private void AddControl(ControlKind kind)
     {
         var item = _viewModel.AddControl(kind);

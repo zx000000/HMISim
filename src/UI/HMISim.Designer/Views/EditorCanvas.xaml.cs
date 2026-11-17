@@ -82,25 +82,108 @@ public partial class EditorCanvas : UserControl
         SelectionChanged?.Invoke(item);
     }
 
-    private void AddVisual(ControlItem item)
+    /// <summary>按控件种类生成编辑期预览（静态呈现最终观感，不接真实数据）。</summary>
+    private static UIElement CreatePreview(ControlItem item)
     {
-        UIElement preview = item.Kind == ControlKind.ValueDisplay
-            ? new ValueDisplay
+        var darkText = new SolidColorBrush(Color.FromArgb(0xFF, 0x1F, 0x29, 0x37));
+        UIElement preview = item.Kind switch
+        {
+            ControlKind.ValueDisplay => new ValueDisplay
             {
                 Title = item.Title,
                 DisplayValue = "88.88",
                 Quality = Quality.Good,
-                IsHitTestVisible = false,
-            }
-            : new TextBlock
+            },
+            ControlKind.PushButton => new Border
+            {
+                Background = new SolidColorBrush(Color.FromArgb(0xFF, 0xE5, 0xE7, 0xEB)),
+                BorderBrush = new SolidColorBrush(Color.FromArgb(0xFF, 0x9A, 0xA0, 0xA6)),
+                BorderThickness = new Thickness(1),
+                CornerRadius = new CornerRadius(6),
+                Margin = new Thickness(4),
+                Child = new TextBlock
+                {
+                    Text = item.Title,
+                    FontSize = 15,
+                    FontWeight = FontWeights.SemiBold,
+                    Foreground = darkText,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
+                },
+            },
+            ControlKind.IndicatorLamp => new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(10, 0, 0, 0),
+                Children =
+                {
+                    new Ellipse
+                    {
+                        Width = 26,
+                        Height = 26,
+                        Fill = new SolidColorBrush(Color.FromArgb(0xFF, 0x22, 0xC5, 0x5E)),
+                        Stroke = new SolidColorBrush(Color.FromArgb(0xFF, 0x9A, 0xA0, 0xA6)),
+                        StrokeThickness = 2,
+                    },
+                    new TextBlock
+                    {
+                        Text = item.Title,
+                        FontSize = 14,
+                        FontWeight = FontWeights.SemiBold,
+                        Foreground = darkText,
+                        Margin = new Thickness(10, 0, 0, 0),
+                        VerticalAlignment = VerticalAlignment.Center,
+                    },
+                },
+            },
+            ControlKind.ValueInput => new TextBlock
+            {
+                Text = $"{item.Title}：[ 88.88 ]",
+                FontSize = 14,
+                Foreground = darkText,
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(10, 0, 0, 0),
+            },
+            ControlKind.LevelBar => new StackPanel
+            {
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(10, 0, 10, 0),
+                Children =
+                {
+                    new TextBlock { Text = item.Title, FontSize = 14, FontWeight = FontWeights.SemiBold, Foreground = darkText },
+                    new Border
+                    {
+                        Height = 16,
+                        Margin = new Thickness(0, 6, 0, 0),
+                        Background = new SolidColorBrush(Color.FromArgb(0xFF, 0xE5, 0xE7, 0xEB)),
+                        CornerRadius = new CornerRadius(3),
+                        Child = new Border
+                        {
+                            Width = Math.Max(30, (item.Width - 44) * 0.6),
+                            HorizontalAlignment = HorizontalAlignment.Left,
+                            Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x25, 0x63, 0xEB)),
+                            CornerRadius = new CornerRadius(3),
+                        },
+                    },
+                },
+            },
+            _ => new TextBlock
             {
                 Text = item.Title,
                 FontSize = 20,
                 FontWeight = FontWeights.SemiBold,
-                Foreground = new SolidColorBrush(Color.FromArgb(0xFF, 0x1F, 0x29, 0x37)),
+                Foreground = darkText,
                 VerticalAlignment = VerticalAlignment.Center,
-                IsHitTestVisible = false,
-            };
+            },
+        };
+        preview.IsHitTestVisible = false;
+        return preview;
+    }
+
+    private void AddVisual(ControlItem item)
+    {
+        UIElement preview = CreatePreview(item);
         var grid = new Grid();
         grid.Children.Add(preview);
         var handle = new Rectangle

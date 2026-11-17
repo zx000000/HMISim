@@ -18,9 +18,40 @@
                        Foreground="#FF1F2937" VerticalAlignment="Center"
                        Width="{Binding Item.Width}" Height="{Binding Item.Height}" />
         </DataTemplate>
+        <DataTemplate x:Key="PushButtonTemplate">
+            <local:ActionButton Title="{Binding Item.Title}"
+                                Quality="{Binding Quality}"
+                                Width="{Binding Item.Width}"
+                                Height="{Binding Item.Height}" />
+        </DataTemplate>
+        <DataTemplate x:Key="IndicatorLampTemplate">
+            <local:IndicatorLamp Title="{Binding Item.Title}"
+                                 IsOn="{Binding IsOn}"
+                                 Quality="{Binding Quality}"
+                                 Width="{Binding Item.Width}"
+                                 Height="{Binding Item.Height}" />
+        </DataTemplate>
+        <DataTemplate x:Key="ValueInputTemplate">
+            <local:ValueInput Title="{Binding Item.Title}"
+                              DisplayValue="{Binding DisplayValue}"
+                              Width="{Binding Item.Width}"
+                              Height="{Binding Item.Height}" />
+        </DataTemplate>
+        <DataTemplate x:Key="LevelBarTemplate">
+            <local:LevelBar Title="{Binding Item.Title}"
+                            DisplayValue="{Binding DisplayValue}"
+                            Fraction="{Binding BarFraction}"
+                            Quality="{Binding Quality}"
+                            Width="{Binding Item.Width}"
+                            Height="{Binding Item.Height}" />
+        </DataTemplate>
         <local:ControlTemplateSelector x:Key="TemplateSelector"
                                        ValueDisplayTemplate="{StaticResource ValueDisplayTemplate}"
-                                       LabelTemplate="{StaticResource LabelTemplate}" />
+                                       LabelTemplate="{StaticResource LabelTemplate}"
+                                       PushButtonTemplate="{StaticResource PushButtonTemplate}"
+                                       IndicatorLampTemplate="{StaticResource IndicatorLampTemplate}"
+                                       ValueInputTemplate="{StaticResource ValueInputTemplate}"
+                                       LevelBarTemplate="{StaticResource LevelBarTemplate}" />
     </UserControl.Resources>
     <DockPanel>
         <TextBlock DockPanel.Dock="Bottom" Text="{Binding StatusText}" FontSize="11"

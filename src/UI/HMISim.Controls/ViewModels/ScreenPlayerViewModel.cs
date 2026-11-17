@@ -24,11 +24,21 @@ public sealed class ScreenPlayerViewModel : ObservableObject
     public ScreenPlayerViewModel(ProjectDocument project)
     {
         _project = project;
+        var typesByPoint = project.Points.ToDictionary(
+            p => p.Id,
+            p => Enum.Parse<HMISim.DriverSdk.TagDataType>(p.DataType),
+            StringComparer.Ordinal);
         Items = new ObservableCollection<ControlItemViewModel>(
-            project.Screen.Controls.Select(c => new ControlItemViewModel(c)));
+            project.Screen.Controls.Select(c => new ControlItemViewModel(
+                c,
+                c.BindingPointId is { } bound && typesByPoint.TryGetValue(bound, out var type) ? type : null,
+                WritePoint)));
         _refreshTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(200) };
         _refreshTimer.Tick += (_, _) => Refresh();
     }
+
+    /// <summary>交互控件的写入出口：转交设备运行时的优先写队列（未启动/无设备时静默忽略）。</summary>
+    private void WritePoint(string pointId, object value) => _device?.TryEnqueueWrite(pointId, value);
 
     /// <summary>控件项集合。</summary>
     public ObservableCollection<ControlItemViewModel> Items { get; }
